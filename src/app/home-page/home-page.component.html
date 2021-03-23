@@ -1,0 +1,37 @@
+<main>
+  <section class="hero">
+    <div class="hero-content pt-2">
+      <div class="w-100">
+        <img src="../assets/capstone-logo.svg" class="m-auto d-block" width="200px">
+      </div>
+      <div class="w-50 text-center m-auto text-white">
+       <h4 class="mt-2"> The Casting Agency models a company that is responsible for creating movies and
+        managing and assigning actors to those movies.</h4>
+      </div>
+      <div class="text-center">
+        <button class="btn btn-light btn-lg">Login</button>
+      </div>
+    </div>
+    <div class="hero-gradient"></div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="text-center p-4">
+       <h1>📀</h1>
+      </div>
+      <div class="row row-eq-heights">
+        <div *ngFor="let obj of colors; let i = index" class="col-md-4 mb-3">
+          <div class="h-100 text-white">
+            <div  class="movie-banner" [ngStyle]="{'background': bannerBG}">
+              A
+            </div>
+            <h4 class="mt-1">Movie Name</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+</main>
