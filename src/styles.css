@@ -7,10 +7,12 @@ body{
 
 .hero{
   width: 100%;
-  height: 450px;
+  height: 400px;
   background-size: cover;
+  position: relative;
   /*background: conic-gradient(from 90deg at bottom right, cyan, rebeccapurple);*/
   background: yellow url(kal-visuals-jA7iWRaJruA-unsplash.jpg) no-repeat top;
+  overflow: hidden;
 
 }
 
@@ -25,6 +27,7 @@ body{
   position: absolute;
   top: 0;
   left: 0;
+  bottom: 0;
   height: 100%;
   width: 100%;
 }
@@ -47,4 +50,42 @@ body{
   color: beige;
   font-size: 80px;
   font-weight: bold;
+}
+
+.movie-wrapper{
+  transition: 1s ease all;
+  cursor: pointer;
+}
+
+.actor-banner{
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: beige;
+  border-radius: 50%;
+  font-size: 80px;
+  font-weight: bold;
+  margin: 0 auto;
+}
+
+.actor-wrapper{
+  transition: 1s ease all;
+  cursor: pointer;
+}
+
+.actor-wrapper:hover{
+}
+
+.movie-actions, .actor-actions{
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  padding: 5px;
+  display: none;
+}
+
+.movie-wrapper:hover .movie-actions, .actor-wrapper:hover .actor-actions {
+  display: flex;
 }

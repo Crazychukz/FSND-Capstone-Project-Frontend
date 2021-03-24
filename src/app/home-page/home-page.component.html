@@ -1,15 +1,16 @@
-<main>
+<main class="min-vh-100">
   <section class="hero">
-    <div class="hero-content pt-2">
+    <div class="hero-content pt-4">
       <div class="w-100">
         <img src="../assets/capstone-logo.svg" class="m-auto d-block" width="200px">
       </div>
       <div class="w-50 text-center m-auto text-white">
-       <h4 class="mt-2"> The Casting Agency models a company that is responsible for creating movies and
-        managing and assigning actors to those movies.</h4>
+        <h4 class="mt-2"> The Casting Agency models a company that is responsible for creating movies and
+          managing and assigning actors to those movies.</h4>
       </div>
       <div class="text-center">
-        <button class="btn btn-light btn-lg">Login</button>
+        <a *ngIf="!auth.token" [href]="loginURL" class="btn btn-light btn-lg">Login</a>
+        <button (click)="auth.logout()" *ngIf="auth.token" class="btn btn-light btn-lg">Log Out</button>
       </div>
     </div>
     <div class="hero-gradient"></div>
@@ -17,16 +18,88 @@
 
   <section>
     <div class="container">
-      <div class="text-center p-4">
-       <h1>📀</h1>
+      <div class="text-white d-flex flex-wrap justify-content-between pt-4 pb-4">
+        <div>
+          <h1 *ngIf="view === 'Movies'">📀 Movies
+            <button data-toggle="modal" data-target="#newMovie" class="btn btn-sm btn-light">+ Add</button>
+          </h1>
+          <h1 *ngIf="view === 'Actors'">👨‍👧‍👦 Actors
+            <button data-toggle="modal" data-target="#newActor" class="btn btn-sm btn-light">+ Add</button>
+          </h1>
+        </div>
+        <div>
+          <div class="btn-group">
+            <button *ngIf="auth.can('add:movies')" (click)="view = 'Movies'" class="btn btn-outline-primary"
+                    [ngClass]="{'active' : view === 'Movies'}">Movies
+            </button>
+            <button *ngIf="auth.can('add:actors')" (click)="view = 'Actors'" class="btn btn-outline-primary"
+                    [ngClass]="{'active' : view === 'Actors'}">Actors
+            </button>
+          </div>
+        </div>
+
       </div>
-      <div class="row row-eq-heights">
-        <div *ngFor="let obj of colors; let i = index" class="col-md-4 mb-3">
-          <div class="h-100 text-white">
-            <div  class="movie-banner" [ngStyle]="{'background': bannerBG}">
-              A
+      <div *ngIf="view === 'Movies'" class="row row-eq-heights">
+        <div *ngIf="!auth.can('get:movies')" class="col-md-12">
+          <div class="alert-success alert">
+            <h6>Invalid Permissions</h6>
+            <hr>
+            <p>This User does not have permissions to view movies</p>
+          </div>
+        </div>
+        <div *ngFor="let obj of movies; let i = index" class="col-md-4 mb-3">
+          <div class="h-100 text-white movie-wrapper position-relative">
+            <div class="movie-actions w-100 justify-content-end align-items-center">
+              <button  *ngIf="auth.can('add:movies')" (click)="deleteMovie(obj.id)" class="btn btn-sm btn-dark"><small>
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                </svg>
+              </small></button>
+              <button  *ngIf="auth.can('patch:movies')" (click)="activeMovie = obj" data-target="#addMovieCasts"
+                       data-toggle="modal" class="btn btn-sm btn-light ml-1 btn-link"><small>Add Cast</small></button>
             </div>
-            <h4 class="mt-1">Movie Name</h4>
+            <div class="movie-banner" [ngStyle]="{'background': bannerBG}">
+              <span class="text-uppercase">{{getFirstLetter(obj.title) }}</span>
+            </div>
+            <div class="d-flex mt-2">
+              <div>
+                <h5 class=" mb-0">{{ obj.title }}</h5>
+                <small>{{ obj.release_date | date }}</small>
+              </div>
+              <div class="d-flex ml-auto">
+                <div><button (click)="activeCasts = obj.casts" data-toggle="modal" data-target="#movieCasts" class="btn btn-sm btn-secondary">
+                  <small> View Casts</small>
+              </button></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div *ngIf="view === 'Actors'" class="row row-eq-heights">
+        <div *ngIf="!auth.can('get:movies')" class="col-md-12">
+          <div class="alert-success alert">
+            <h6>Invalid Permissions</h6>
+            <hr>
+            <p>This User does not have permissions to view actors</p>
+          </div>
+        </div>
+        <div *ngFor="let obj of actors; let i = index" class="col-md-4 mb-3">
+          <div class="h-100 text-white position-relative actor-wrapper">
+            <div class="actor-actions w-100 justify-content-end">
+              <button  *ngIf="auth.can('add:actors')" (click)="deleteActor(obj.id)" class="btn btn-sm btn-dark"><small>
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                </svg>
+              </small></button>
+            </div>
+            <div class="actor-banner" [ngStyle]="{'background': bannerBG}">
+              <span class="text-uppercase"> {{ obj.gender === 'Male' ? '👨' : "👩" }}</span>
+            </div>
+            <h4 class="mt-1 text-center">{{ obj.name }} <br>
+              <small class="badge badge-pill badge-secondary">{{ obj.age }}/{{ getFirstLetter(obj.gender) }}</small>
+            </h4>
+
           </div>
         </div>
       </div>
@@ -35,3 +108,126 @@
 
 
 </main>
+<footer class="d-flex justify-content-center p-3 align-items-center">
+  <a href="https://github.com/Crazychukz" class="">My Github  </a>  <a href="mailto:chukwuemekacharles88@gmail.com"> &nbsp;/  Email</a>
+</footer>
+<!-- Modal -->
+<div class="modal fade" id="newMovie" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">New Movie</h5>
+        <button id="closeNewMovie" type="button" class="btn btn-light" data-dismiss="modal" aria-label="Close">X
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #newMovieForm="ngForm">
+          <div class="form-group">
+            <label for="title">Tile</label>
+            <input class="form-control" type="text" id="title" name="title" required [(ngModel)]="movieObj.title">
+          </div>
+          <div class="form-group">
+            <label for="date">Release Date</label>
+            <input class="form-control" type="date" id="date" name="date" required [(ngModel)]="movieObj.release_date">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button [disabled]="newMovieForm.invalid" (click)="addMovie()" type="button" class="btn btn-primary">
+          {{ addingMovie ? 'Saving.....' : "Save" }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="movieCasts" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Casts</h5>
+        <button id="closeMovieCasts" type="button" class="btn btn-light" data-dismiss="modal" aria-label="Close">X
+        </button>
+      </div>
+      <div class="modal-body">
+        <ol>
+          <li *ngFor="let obj of activeCasts">
+            {{ obj.name }}
+          </li>
+        </ol>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="newActor" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Actor</h5>
+        <button id="closeNewActor" type="button" class="btn btn-light" data-dismiss="modal" aria-label="Close">X
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #newActorForm="ngForm">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input class="form-control" type="text" id="name" name="name" required [(ngModel)]="actorObj.name">
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input class="form-control" type="number" id="age" name="age" required [(ngModel)]="actorObj.age">
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select class="form-control custom-select" type="number" id="gender" name="gender" required
+                    [(ngModel)]="actorObj.gender">
+              <option [value]="'Male'">Male</option>
+              <option [value]="'Female'">Female</option>
+            </select>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button [disabled]="newActorForm.invalid" (click)="addActor()" type="button" class="btn btn-primary">
+          {{ addingActor ? 'Saving.....' : "Save" }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addMovieCasts" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Casts</h5>
+        <button id="closeAddMovieCasts" type="button" class="btn btn-light" data-dismiss="modal" aria-label="Close">X
+        </button>
+      </div>
+      <div class="modal-body">
+        <div *ngFor="let obj of actors" class="form-check">
+          <input class="form-check-input" (change)="toggleCasts(obj.id)" type="checkbox" [value]="obj.id" id="actor{{ obj.id }}">
+          <label class="form-check-label" for="actor{{ obj.id }}">
+           {{ obj.name }}
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" (click)="addCasts()" class="btn btn-primary mr-1">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
