@@ -47,7 +47,6 @@ export class HomePageComponent implements OnInit, AfterViewChecked {
       .queryParams
       .subscribe(params => {
         const uu = params['access_token'] || '';
-        console.log(uu);
       });
     this.getMovies();
     this.getActors();
@@ -65,7 +64,6 @@ export class HomePageComponent implements OnInit, AfterViewChecked {
         this.movies = data['movies'];
       }, error => {
         // alert('Failed to get movies');
-        console.log(error);
       }
     );
   }
@@ -124,7 +122,7 @@ export class HomePageComponent implements OnInit, AfterViewChecked {
     );
   }
   ngAfterViewChecked() {
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
   }
 
   toggleCasts(i) {

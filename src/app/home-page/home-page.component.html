@@ -21,18 +21,18 @@
       <div class="text-white d-flex flex-wrap justify-content-between pt-4 pb-4">
         <div>
           <h1 *ngIf="view === 'Movies'">📀 Movies
-            <button data-toggle="modal" data-target="#newMovie" class="btn btn-sm btn-light">+ Add</button>
+            <button  *ngIf="auth.can('add:movies')" data-toggle="modal" data-target="#newMovie" class="btn btn-sm btn-light">+ Add</button>
           </h1>
           <h1 *ngIf="view === 'Actors'">👨‍👧‍👦 Actors
-            <button data-toggle="modal" data-target="#newActor" class="btn btn-sm btn-light">+ Add</button>
+            <button *ngIf="auth.can('add:actors')" data-toggle="modal" data-target="#newActor" class="btn btn-sm btn-light">+ Add</button>
           </h1>
         </div>
         <div>
           <div class="btn-group">
-            <button *ngIf="auth.can('add:movies')" (click)="view = 'Movies'" class="btn btn-outline-primary"
+            <button (click)="view = 'Movies'" class="btn btn-outline-primary"
                     [ngClass]="{'active' : view === 'Movies'}">Movies
             </button>
-            <button *ngIf="auth.can('add:actors')" (click)="view = 'Actors'" class="btn btn-outline-primary"
+            <button (click)="view = 'Actors'" class="btn btn-outline-primary"
                     [ngClass]="{'active' : view === 'Actors'}">Actors
             </button>
           </div>
